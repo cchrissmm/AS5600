@@ -49,15 +49,13 @@ void serialRX()
     if (str.startsWith("SETMPOS")) // starting check for "VAR"
     {
       Serial.println("Set MPos mode requested: ");
-      Serial.println(as5600.setMPosition(4096));
-      Serial.println(as5600.getMaxAngle());
+      Serial.println(as5600.setMPosition(4095));
     }
 
     if (str.startsWith("BURNANGLE")) // starting check for "VAR"
     {
       Serial.println("Burn angle requested: ");
       as5600.burnAngle();
-      Serial.println(as5600.getMaxAngle());
     }
 
     if (str.startsWith("STAT")) // starting check for "VAR"
