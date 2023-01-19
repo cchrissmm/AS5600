@@ -21,6 +21,19 @@ void serialRX()
   if (Serial.available())
   {
     String str = Serial.readStringUntil('\n');
+        if (str.startsWith("SETUP")) // starting check for "VAR"
+    {
+      Serial.println("Setup for Escapee 1000 requested");
+      Serial.print("This chip has been burned ");
+      Serial.print(as5600.getZMCO());
+      Serial.println(" times before. Burn cycle starting now.");
+      as5600.setMPosition(4095);
+      delay(1000);
+      as5600.burnAngle();
+      delay(1000);
+      Serial.print("New burn total ");
+      Serial.println(as5600.getZMCO());
+    }
 
     if (str.startsWith("PWM920")) // starting check for "VAR"
     {
@@ -125,6 +138,8 @@ void serialRX()
 
       Serial.println();
     }
+
+
   }
 }
 
