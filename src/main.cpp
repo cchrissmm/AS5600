@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "AS5600.h"
 #include "Wire.h"
-#include "logger.h"
 
 AS5600 as5600; //  use default Wire
 
@@ -64,46 +63,46 @@ void serialRX()
     if (str.startsWith("STAT")) // starting check for "VAR"
     {
       Serial.print("Power Mode:\t ");
-      Serial.println(as5600.getPowerMode(), HEX);
+      Serial.println(as5600.getPowerMode());
 
       Serial.print("Hysteresis:\t ");
-      Serial.println(as5600.getHysteresis(), HEX);
+      Serial.println(as5600.getHysteresis());
 
       Serial.print("Output Stage:\t ");
-      Serial.println(as5600.getOutputMode(), HEX);
+      Serial.println(as5600.getOutputMode());
 
       Serial.print("PWM Frequency:\t ");
-      Serial.println(as5600.getPWMFrequency(), HEX);
+      Serial.println(as5600.getPWMFrequency());
 
       Serial.print("Slow Filter:\t ");
-      Serial.println(as5600.getSlowFilter(), HEX);
+      Serial.println(as5600.getSlowFilter());
 
       Serial.print("Fast Filter Threshold:\t ");
-      Serial.println(as5600.getFastFilter(), HEX);
+      Serial.println(as5600.getFastFilter());
 
       Serial.print("Watchdog Mode:\t ");
-      Serial.println(as5600.getWatchDog(), HEX);
+      Serial.println(as5600.getWatchDog());
 
       Serial.print("STATUS Register:\t ");
-      Serial.println(as5600.readStatus(), HEX);
+      Serial.println(as5600.readStatus());
 
       Serial.print("ZMCO Status (nr of burn angles):\t ");
-      Serial.println(as5600.getZMCO(), HEX);
+      Serial.println(as5600.getZMCO());
 
       Serial.print("ZMCO Position:\t ");
-      Serial.println(as5600.getZPosition(), HEX);
+      Serial.println(as5600.getZPosition());
 
       Serial.print("M Position:\t ");
-      Serial.println(as5600.getMPosition(), HEX);
+      Serial.println(as5600.getMPosition());
 
       Serial.print("Max Angle:\t ");
-      Serial.println(as5600.getMaxAngle(), HEX);
+      Serial.println(as5600.getMaxAngle());
 
       Serial.print("CONFIG:\t ");
-      Serial.println(as5600.getConfigure(), HEX);
+      Serial.println(as5600.getConfigure());
 
       Serial.print("  GAIN:\t ");
-      Serial.println(as5600.readAGC(), HEX);
+      Serial.println(as5600.readAGC());
 
       Serial.print("Magnitude:\t ");
       Serial.println(as5600.readMagnitude());
@@ -112,13 +111,13 @@ void serialRX()
       Serial.println(as5600.readAGC());
 
       Serial.print("DETECT:\t ");
-      Serial.println(as5600.detectMagnet(), HEX);
+      Serial.println(as5600.detectMagnet());
 
       Serial.print("M HIGH:\t ");
-      Serial.println(as5600.magnetTooStrong(), HEX);
+      Serial.println(as5600.magnetTooStrong());
 
       Serial.print("M  LOW:\t ");
-      Serial.println(as5600.magnetTooWeak(), HEX);
+      Serial.println(as5600.magnetTooWeak());
 
       Serial.print("Raw Angle:\t ");
       Serial.println(as5600.rawAngle());
