@@ -1,13 +1,22 @@
 #include <Arduino.h>
 #include "AS5600.h"
 #include "Wire.h"
+#include "motor.h"
 
 AS5600 as5600; //  use default Wire
 
-#define ANALOG_PIN 14
+const int M01DIRPIN = 26;
+const int M01PWMPIN = 27;
+const int M01SIGPIN = 14;
+
+const int PWM_FREQ = 5000;
+const int PWM_RES = 12;
+
+Motor M01(M01DIRPIN,M01PWMPIN,M01SIGPIN);
 
 #define THRESHOLD_LOW 1000
 #define THRESHOLD_HIGH 3000
+
 
 int lastValue;
 int pulseCounter = 0;
@@ -31,8 +40,26 @@ void serialRX()
       delay(1000);
       as5600.burnAngle();
       delay(1000);
-      Serial.print("New burn total ");
+      Serial.print("New burn total (burnt ok if this number is 1 more than before");
       Serial.println(as5600.getZMCO());
+    }
+
+    if (str.startsWith("RUNUP")) 
+    {
+      Serial.println("Motor Run UP requested");
+      M01.runUp(255);
+    }
+
+        if (str.startsWith("RUNDOWN")) 
+    {
+      Serial.println("Motor Run DOWN requested");
+      M01.runDown(255);
+    }
+
+        if (str.startsWith("STOP")) 
+    {
+      Serial.println("Motor STOP requested");
+      M01.stop();
     }
 
     if (str.startsWith("PWM920")) // starting check for "VAR"
@@ -71,6 +98,12 @@ void serialRX()
       as5600.burnAngle();
     }
 
+    if (str.startsWith("AVALUE")) // starting check for "VAR"
+    {
+      Serial.println("Get Analog pin current value (mV): ");
+      Serial.println(analogReadMilliVolts(M01SIGPIN));
+    }
+
     if (str.startsWith("STAT")) // starting check for "VAR"
     {
       Serial.print("Power Mode:\t ");
@@ -79,8 +112,8 @@ void serialRX()
       Serial.print("Hysteresis:\t ");
       Serial.println(as5600.getHysteresis());
 
-      Serial.print("Output Stage:\t ");
-      Serial.println(as5600.getOutputMode());
+      Serial.print("Output Stage (00=analog, 01=analog limited, 10=PWM):\t ");
+      Serial.println(as5600.getOutputMode(),BIN);
 
       Serial.print("PWM Frequency:\t ");
       Serial.println(as5600.getPWMFrequency());
@@ -91,7 +124,7 @@ void serialRX()
       Serial.print("Fast Filter Threshold:\t ");
       Serial.println(as5600.getFastFilter());
 
-      Serial.print("Watchdog Mode:\t ");
+      Serial.print("Watchdog Mode (0=off):\t ");
       Serial.println(as5600.getWatchDog());
 
       Serial.print("STATUS Register:\t ");
@@ -136,6 +169,9 @@ void serialRX()
       Serial.print("Angle:\t ");
       Serial.println(as5600.readAngle());
 
+      Serial.print("Signal pin value (mV):\t ");
+      Serial.println(analogReadMilliVolts(M01SIGPIN));
+
       Serial.println();
     }
 
@@ -145,41 +181,17 @@ void serialRX()
 
 void countPulse()
 {
-  value = analogRead(ANALOG_PIN);
+  value = analogRead(M01SIGPIN);
 
   //***RISING EDGE
   if (value > THRESHOLD_HIGH && lastValue < THRESHOLD_LOW)
   {
     pulseCounter++;
-
-    // Serial.print("pulseCounter rising: ");
-    // Serial.println(pulseCounter);
-
-    // Serial.print("value: ");
-    // Serial.println(value);
-
-    // Serial.print("lastvalue: ");
-    // Serial.println(lastValue);
-
-    // Serial.print("millis: ");
-    // Serial.println(millis());
   }
   //***FALLING EDGE
   if (value < THRESHOLD_LOW && lastValue > THRESHOLD_HIGH)
   {
     pulseCounter--;
-
-    // Serial.print("pulseCounter falling: ");
-    // Serial.println(pulseCounter);
-
-    // Serial.print("value: ");
-    // Serial.println(value);
-
-    // Serial.print("lastvalue: ");
-    // Serial.println(lastValue);
-
-    // Serial.print("millis: ");
-    // Serial.println(millis()); 
   }
 
   lastValue = value;
@@ -191,7 +203,13 @@ void setup()
   Wire.begin();
   as5600.begin(4); //  set direction pin.
 
-  pinMode(ANALOG_PIN, INPUT);
+  pinMode(M01SIGPIN, INPUT);
+
+//LIFTER01 Setup
+    ledcAttachPin(M01PWMPIN, 0);
+    ledcSetup(0, PWM_FREQ, PWM_RES);
+    pinMode(M01DIRPIN, OUTPUT);
+    pinMode(M01SIGPIN, INPUT); // may need pullup
   
 }
 
